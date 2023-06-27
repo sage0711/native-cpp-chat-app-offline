@@ -26,9 +26,10 @@ public class MainActivity extends AppCompatActivity {
 
         binding = ActivityMainBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
-
+        stringFromJNI();
+        int ans = addNumbers(50, 100);
         try {
-            this.alertString("Hi, Yuudai Ishihara !!!");
+            this.alertString("Hi, Yuudai Ishihara !!!\n50 + 100 = " + ans);
         } catch (StringPrepParseException e) {
             throw new RuntimeException(e);
         }
@@ -53,6 +54,8 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public native int createSocket(int x, String y);
+    public native String stringFromJNI();
+    public native int addNumbers(int x, int y);
 
     /**
      * A native method that is implemented by the 'native_cpp_chat_app' native library,

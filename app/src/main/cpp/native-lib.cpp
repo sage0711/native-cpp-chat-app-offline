@@ -18,7 +18,22 @@ Java_com_example_native_1cpp_1chat_1app_MainActivity_stringFromJNI(
         JNIEnv* env,
         jobject /* this */) {
     std::string hello = "Hello from C++";
+    std::cout << hello << std::endl;
     return env->NewStringUTF(hello.c_str());
+}
+
+jint plus(jint x, jint y) {
+    return x + y;
+}
+
+extern "C" JNIEXPORT jint JNICALL
+Java_com_example_native_1cpp_1chat_1app_MainActivity_addNumbers(
+        JNIEnv* env,
+        jobject,
+        jint x,
+        jint y
+        ) {
+    return plus(x, y);
 }
 
 // Checks if the parameter (c-style string) is an integer
@@ -37,9 +52,9 @@ Java_com_example_native_1cpp_1chat_1app_MainActivity_createSocket(
         JNIEnv* env,
         jobject,
         jint argc,
-        jstring** argv) {
+        jstring argv) {
 
-    if(argc != 2 || !is_int((char * )argv[1])) {
+    if(argc != 2 || !is_int((char * )argv)) {
         std::cerr << "[ERROR] Port is not provided via command line parameters!\n";
         return -1;
     }
@@ -56,7 +71,7 @@ Java_com_example_native_1cpp_1chat_1app_MainActivity_createSocket(
     //Address info to bind socket
     sockaddr_in server_addr;
     server_addr.sin_family = AF_INET;
-    server_addr.sin_port = htons(std::atoi((char *)argv[1]));
+    server_addr.sin_port = htons(std::atoi((char *)argv));
     //server_addr.sin_addr.s_addr = INADDR_ANY;
     //OR
     inet_pton(AF_INET, "0.0.0.0", &server_addr.sin_addr);
@@ -146,5 +161,3 @@ Java_com_example_native_1cpp_1chat_1app_MainActivity_createSocket(
 
     return 0;
 }
-
-
