@@ -35,7 +35,9 @@ bool is_int(char *c) {
 extern "C" JNIEXPORT jint JNICALL
 Java_com_example_native_1cpp_1chat_1app_MainActivity_createSocket(
         JNIEnv* env,
-        jobject, jint argc, jstring** argv) {
+        jobject,
+        jint argc,
+        jstring** argv) {
 
     if(argc != 2 || !is_int((char * )argv[1])) {
         std::cerr << "[ERROR] Port is not provided via command line parameters!\n";
@@ -125,7 +127,7 @@ Java_com_example_native_1cpp_1chat_1app_MainActivity_createSocket(
             std::cerr << "[ERROR] Something went wrong while receiving data!.\n";
             break;
         }
-            // If there is some bytes
+            // If there are some bytes
         else {
             // Print message
             std::cout << "client> " << std::string(msg_buf, 0, bytes) << "\n";
