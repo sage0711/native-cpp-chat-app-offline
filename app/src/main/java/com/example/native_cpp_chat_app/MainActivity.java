@@ -52,6 +52,8 @@ public class MainActivity extends AppCompatActivity {
         return alertStr;
     }
 
+    public native int createSocket(int x, String y);
+
     /**
      * A native method that is implemented by the 'native_cpp_chat_app' native library,
      * which is packaged with this application.
