@@ -12,6 +12,7 @@ import android.view.View;
 import android.widget.EditText;
 import android.widget.ImageButton;
 
+import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.net.Socket;
 import java.io.InputStreamReader;
@@ -33,7 +34,8 @@ public class MainActivity extends AppCompatActivity {
     private ActivityMainBinding binding;
     private ImageButton btn_msg_send;
     private EditText box_msg_input;
-//    private String message;
+
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -59,6 +61,7 @@ public class MainActivity extends AppCompatActivity {
                 String text = box_msg_input.getText().toString();
                 try {
                     sendMessage(text);
+                    emptyMsgSendBox();
                 } catch (StringPrepParseException e) {
                     throw new RuntimeException(e);
                 }
@@ -70,6 +73,11 @@ public class MainActivity extends AppCompatActivity {
     private String sendMessage(String msg) throws StringPrepParseException {
         alertString(msg);
         return msg;
+    }
+
+    public int emptyMsgSendBox() {
+        box_msg_input.setText("");
+        return 1;
     }
 
     public String alertString(String alertStr) throws StringPrepParseException {

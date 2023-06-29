@@ -46,8 +46,8 @@
 
     <ImageButton
         android:id="@+id/btn_msg_send"
-        android:layout_width="41dp"
-        android:layout_height="47dp"
+        android:layout_width="33dp"
+        android:layout_height="32dp"
         android:backgroundTint="#FFFFFF"
         android:clickable="true"
         android:scaleType="fitXY"
@@ -55,10 +55,10 @@
         android:scaleY="2"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.921"
+        app:layout_constraintHorizontal_bias="0.905"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.976"
+        app:layout_constraintVertical_bias="0.974"
         app:srcCompat="@drawable/_682321" />
 
     <LinearLayout
