@@ -1,5 +1,6 @@
 package com.example.native_cpp_chat_app;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.icu.text.StringPrepParseException;
@@ -7,14 +8,17 @@ import android.os.Bundle;
 
 import android.app.AlertDialog;
 import android.content.DialogInterface;
+import android.view.View;
+import android.widget.EditText;
+import android.widget.ImageButton;
 
-import java.io.DataInputStream;
-import java.io.DataOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
+import java.io.OutputStreamWriter;
 import java.net.Socket;
-import java.lang.Thread;
+import java.io.InputStreamReader;
+import java.io.BufferedReader;
+
+//import com.google.android.material.textfield.TextInputEditText;
+//import com.google.android.material.textfield.TextInputLayout;
 
 import com.example.native_cpp_chat_app.databinding.ActivityMainBinding;
 
@@ -27,6 +31,9 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private ActivityMainBinding binding;
+    private ImageButton btn_msg_send;
+    private EditText box_msg_input;
+//    private String message;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -35,53 +42,34 @@ public class MainActivity extends AppCompatActivity {
         binding = ActivityMainBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
 
-        Thread server_thread = new Thread(() -> {
-            start();
-        });
-        Thread client_thread = new Thread(() -> {
-            Socket socket = null;
-            try {
-                socket = new Socket("localhost", 8080);
-            } catch (IOException e) {
-                throw new RuntimeException(e);
-            }
-            while (true) {
-                String message = "hello";
-                OutputStream outputStream = null;
-                try {
-                    outputStream = socket.getOutputStream();
-                } catch (IOException e) {
-                    throw new RuntimeException(e);
-                }
-                DataOutputStream dataOutputStream = new DataOutputStream(outputStream);
-                try {
-                    dataOutputStream.writeUTF(message);
-                } catch (IOException e) {
-                    throw new RuntimeException(e);
-                }
+        setupUI();
 
-                InputStream inputStream = null;
+        echoServerStart();
+
+    }
+
+    private int setupUI() {
+
+        btn_msg_send = findViewById(R.id.btn_msg_send);
+        box_msg_input = findViewById(R.id.box_msg_input);
+
+        btn_msg_send.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                String text = box_msg_input.getText().toString();
                 try {
-                    inputStream = socket.getInputStream();
-                } catch (IOException e) {
-                    throw new RuntimeException(e);
-                }
-                DataInputStream dataInputStream = new DataInputStream(inputStream);
-                String response = null;
-                try {
-                    response = dataInputStream.readUTF();
-                } catch (IOException e) {
-                    throw new RuntimeException(e);
-                }
-                try {
-                    alertString("Received from server: " + response);
+                    sendMessage(text);
                 } catch (StringPrepParseException e) {
                     throw new RuntimeException(e);
                 }
             }
         });
+        return 1;
+    }
 
-
+    private String sendMessage(String msg) throws StringPrepParseException {
+        alertString(msg);
+        return msg;
     }
 
     public String alertString(String alertStr) throws StringPrepParseException {
@@ -102,11 +90,8 @@ public class MainActivity extends AppCompatActivity {
         return alertStr;
     }
 
-    public native String start();
-//    public native int createSocket(int x, String y);
-//    public native String stringFromJNI();
-//    public native int addNumbers(int x, int y);
-
+    //imports here
+    public native String echoServerStart();
     /**
      * A native method that is implemented by the 'native_cpp_chat_app' native library,
      * which is packaged with this application.

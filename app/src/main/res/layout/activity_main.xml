@@ -17,7 +17,7 @@
         app:layout_constraintVertical_bias="0.977" />
 
     <EditText
-        android:id="@+id/box_message_input"
+        android:id="@+id/box_msg_input"
         android:layout_width="277dp"
         android:layout_height="45dp"
         android:layout_marginTop="668dp"
@@ -33,7 +33,7 @@
         android:layout_width="25dp"
         android:layout_height="0dp"
         android:layout_marginEnd="339dp"
-        app:layout_constraintEnd_toEndOf="@+id/box_message_input"
+        app:layout_constraintEnd_toEndOf="@+id/box_msg_input"
         tools:layout_editor_absoluteY="655dp" />
 
     <Space
@@ -41,11 +41,11 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="355dp"
-        app:layout_constraintStart_toStartOf="@+id/box_message_input"
+        app:layout_constraintStart_toStartOf="@+id/box_msg_input"
         tools:layout_editor_absoluteY="647dp" />
 
     <ImageButton
-        android:id="@+id/btn_send"
+        android:id="@+id/btn_msg_send"
         android:layout_width="41dp"
         android:layout_height="47dp"
         android:backgroundTint="#FFFFFF"
