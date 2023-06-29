@@ -1,150 +1,66 @@
 #include <jni.h>
-#include <string>
 #include <iostream>
-#include <cstdlib>
-#include <netinet/in.h>
-#include <sys/types.h>
 #include <sys/socket.h>
 #include <arpa/inet.h>
-#include <netdb.h>
-#include <type_traits>
 #include <unistd.h>
+#include <cstring>
 
-#define PORT_NUMBER 8080
-#define BUFFER_SIZE 1024
+extern
+"C"
+JNIEXPORT
+jstring
+JNICALL
+Java_com_example_native_1cpp_1chat_1app_MainActivity_echoServerStart
+(
+        JNIEnv *env,
+        jobject
+        ) {
 
-extern "C" JNIEXPORT jstring JNICALL
-Java_com_example_native_1cpp_1chat_1app_MainActivity_stringFromJNI(
-        JNIEnv* env,
-        jobject /* this */) {
-    std::string hello = "Hello from C++";
-    return env->NewStringUTF(hello.c_str());
-}
-
-// Checks if the parameter (c-style string) is an integer
-bool is_int(char *c) {
-    while( *c != '\0' ) {
-        if (*c < '0' || *c > '9') {
-            return false;
+    //creates server socket
+        int server_socket = socket(AF_INET, SOCK_STREAM, 0);
+        if (server_socket == -1) {
+            std::cerr << "Failed to create socket" << std::endl;
+            return env->NewStringUTF("Socket Create Failure");
         }
-        c ++;
-    }
-    return true;
-}
 
-extern "C" JNIEXPORT jint JNICALL
-Java_com_example_native_1cpp_1chat_1app_MainActivity_createSocket(
-        JNIEnv* env,
-        jobject,
-        jint argc,
-        jstring** argv) {
-
-    if(argc != 2 || !is_int((char * )argv[1])) {
-        std::cerr << "[ERROR] Port is not provided via command line parameters!\n";
-        return -1;
-    }
-
-    // Creates a socket and gets the file descriptor
-    int sock_listener = socket(AF_INET, SOCK_STREAM, 0);
-    // Checks if the socket is created
-    if (sock_listener < 0) {
-        std::cerr << "[ERROR] Socket cannot be created!\n";
-        return -2;
-    }
-
-    std::cout << "[INFO] Socket has been created.\n";
-    //Address info to bind socket
-    sockaddr_in server_addr;
-    server_addr.sin_family = AF_INET;
-    server_addr.sin_port = htons(std::atoi((char *)argv[1]));
-    //server_addr.sin_addr.s_addr = INADDR_ANY;
-    //OR
-    inet_pton(AF_INET, "0.0.0.0", &server_addr.sin_addr);
-
-    char buf[INET_ADDRSTRLEN];
-
-    //Binds socket
-    if (bind(sock_listener, (sockaddr *) &server_addr, sizeof(server_addr)) < 0){
-        std::cerr << "[ERROR] Created socket cannot be binded to ( "
-                  << inet_ntop(AF_INET, &server_addr.sin_addr, buf, INET_ADDRSTRLEN)
-                  << ":" << ntohs(server_addr.sin_port) << ")\n";
-        return -3;
-    }
-
-    std::cout << "[INFO] Sock is binded to ("
-              << inet_ntop(AF_INET, &server_addr.sin_addr, buf, INET_ADDRSTRLEN)
-              << ":" << ntohs(server_addr.sin_port) << ")\n";
-
-    // Start listening
-    if (listen(sock_listener, SOMAXCONN) < 0) {
-        std::cerr << "[ERROR] Socket cannot be switched to listen mode!\n";
-        return -4;
-    }
-    std::cout << "[INFO] Socket is listening now.\n";
-
-    // Accept a call
-    sockaddr_in client_addr;
-    socklen_t client_addr_size = sizeof(client_addr);
-    int sock_client;
-    if ((sock_client = accept(sock_listener, (sockaddr*)&client_addr, &client_addr_size)) < 0) {
-        std::cerr << "[ERROR] Connections cannot be accepted for a reason.\n";
-        return -5;
-    }
-
-    std::cout << "[INFO] A connection is accepted now.\n";
-
-    // Close main listener socket
-    close(sock_listener);
-    std::cout << "[INFO] Main listener socket is closed.\n";
-
-    // Get name info
-    char host[NI_MAXHOST];
-    char svc[NI_MAXSERV];
-    if (getnameinfo(
-            (sockaddr*)&client_addr, client_addr_size,
-            host, NI_MAXHOST,
-            svc, NI_MAXSERV, 0) != 0) {
-        std::cout << "[INFO] Client: (" << inet_ntop(AF_INET, &client_addr.sin_addr, buf, INET_ADDRSTRLEN)
-                  << ":" << ntohs(client_addr.sin_port) << ")\n";
-    } else {
-        std::cout << "[INFO] Client: (host: " << host << ", service: " << svc << ")\n";
-    }
-
-
-    char msg_buf[4096];
-    int bytes;
-    // While receiving - display & echo msg
-    while (true) {
-        bytes = recv(sock_client, &msg_buf, 4096, 0);
-        // Check how many bytes recieved
-        // If there is no data, it means server is disconnected
-        if (bytes == 0) {
-            std::cout << "[INFO] Client is disconnected.\n";
-            break;
+        // binds socket to address and port
+        struct sockaddr_in server_address;
+        server_address.sin_family = AF_INET;
+        server_address.sin_addr.s_addr = INADDR_ANY;
+        server_address.sin_port = htons(8080);  //to port 8080
+        if(bind(server_socket, (struct sockaddr * ) &server_address, sizeof(server_address)) == -1) {
+            std::cerr << "Failed to bind socket" << std::endl;
+            close(server_socket);
+            return env->NewStringUTF("Socket Bind Failure");
         }
-            // If something gone wrong
-        else if (bytes < 0) {
-            std::cerr << "[ERROR] Something went wrong while receiving data!.\n";
-            break;
+
+        // listens for incoming connections
+        if (listen(server_socket, 3) == -1) {
+            std::cerr << "Failed to listen for incoming connections." << std::endl;
+            close(server_socket);
+            return env->NewStringUTF("Socket Listen Failure");
         }
-            // If there are some bytes
-        else {
-            // Print message
-            std::cout << "client> " << std::string(msg_buf, 0, bytes) << "\n";
-            // Resend the same message
-            if (send(sock_client, &msg_buf, bytes, 0) < 0) {
-                std::cerr << "[ERROR] Message cannot be send, exiting...\n";
-                break;
+
+        struct sockaddr_in client_address;
+        socklen_t addrlen = sizeof(client_address);
+        while(true) {
+            //accepts incoming connections
+            int client_socket = accept(server_socket, (struct sockaddr *) &client_address,
+                                       &addrlen);
+            if (client_socket == -1) {
+                std::cerr << "Failed to accept incoming connection." << std::endl;
+                close(server_socket);
+                return env->NewStringUTF("Client socket accept failure");
+            }
+
+            // echos client's messages
+            char buffer[1024] = {0};
+            int bytesRead ;
+            while(0 < (bytesRead = recv(client_socket, buffer, 1024, 0))) {
+                send(client_socket, buffer, bytesRead, 0);
             }
         }
 
-    }
-
-    // Close client socket
-    close(sock_client);
-    std::cout << "[INFO] Client socket is closed.\n";
-
-    return 0;
+        std::string hello_str = "Hello everyone";
+        return env->NewStringUTF(hello_str.c_str());
 }
-
-

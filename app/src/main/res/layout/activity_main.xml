@@ -17,7 +17,7 @@
         app:layout_constraintVertical_bias="0.977" />
 
     <EditText
-        android:id="@+id/box_message_input"
+        android:id="@+id/box_msg_input"
         android:layout_width="277dp"
         android:layout_height="45dp"
         android:layout_marginTop="668dp"
@@ -33,7 +33,7 @@
         android:layout_width="25dp"
         android:layout_height="0dp"
         android:layout_marginEnd="339dp"
-        app:layout_constraintEnd_toEndOf="@+id/box_message_input"
+        app:layout_constraintEnd_toEndOf="@+id/box_msg_input"
         tools:layout_editor_absoluteY="655dp" />
 
     <Space
@@ -41,13 +41,13 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="355dp"
-        app:layout_constraintStart_toStartOf="@+id/box_message_input"
+        app:layout_constraintStart_toStartOf="@+id/box_msg_input"
         tools:layout_editor_absoluteY="647dp" />
 
     <ImageButton
-        android:id="@+id/btn_send"
-        android:layout_width="37dp"
-        android:layout_height="38dp"
+        android:id="@+id/btn_msg_send"
+        android:layout_width="33dp"
+        android:layout_height="32dp"
         android:backgroundTint="#FFFFFF"
         android:clickable="true"
         android:scaleType="fitXY"
@@ -55,10 +55,18 @@
         android:scaleY="2"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.911"
+        app:layout_constraintHorizontal_bias="0.905"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.963"
+        app:layout_constraintVertical_bias="0.974"
         app:srcCompat="@drawable/_682321" />
+
+    <LinearLayout
+        android:id="@+id/box_msg_view"
+        android:layout_width="335dp"
+        android:layout_height="624dp"
+        android:orientation="vertical"
+        tools:layout_editor_absoluteX="40dp"
+        tools:layout_editor_absoluteY="30dp"></LinearLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>
