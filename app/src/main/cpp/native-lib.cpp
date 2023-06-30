@@ -5,6 +5,8 @@
 #include <unistd.h>
 #include <cstring>
 
+// this is the cpp echo server socket
+
 extern
 "C"
 JNIEXPORT
@@ -15,8 +17,7 @@ Java_com_example_native_1cpp_1chat_1app_MainActivity_echoServerStart
         JNIEnv *env,
         jobject
         ) {
-
-    //creates server socket
+        //creates server socket
         int server_socket = socket(AF_INET, SOCK_STREAM, 0);
         if (server_socket == -1) {
             std::cerr << "Failed to create socket" << std::endl;
