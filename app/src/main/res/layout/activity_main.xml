@@ -20,14 +20,15 @@
         android:id="@+id/box_msg_input"
         android:layout_width="277dp"
         android:layout_height="45dp"
-        android:layout_marginTop="668dp"
         android:ems="10"
         android:hint="Type here..."
         android:inputType="text"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.291"
+        app:layout_constraintHorizontal_bias="0.298"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.973" />
 
     <Space
         android:layout_width="25dp"
