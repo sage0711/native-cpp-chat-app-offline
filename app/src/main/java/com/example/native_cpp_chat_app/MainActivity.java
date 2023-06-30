@@ -32,6 +32,13 @@ import java.util.Enumeration;
 
 import com.example.native_cpp_chat_app.databinding.ActivityMainBinding;
 
+// Define a callback interface to handle the response or error
+interface OnResponseListener {
+    void onResponse(String response);
+    void onError(IOException e);
+}
+
+
 public class MainActivity extends AppCompatActivity {
 
     // Used to load the 'native_cpp_chat_app' library on application startup.
@@ -122,17 +129,28 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 String text = box_msg_input.getText().toString();
-//                try {
-//                    sendMessage(text);
-//                    emptyMsgSendBox();
-//                } catch (StringPrepParseException e) {
-//                    throw new RuntimeException(e);
-//                } catch (IOException e) {
-//                    throw new RuntimeException(e);
-//                }
                 try {
-                    alertString(text);
+                    sendMessage(text, new OnResponseListener() {
+                        @Override
+                        public void onResponse(String response) {
+                            // alerts response to user
+                            try {
+                                alertString(response);
+                            } catch (StringPrepParseException e) {
+                                throw new RuntimeException(e);
+                            }
+                        }
+
+                        @Override
+                        public void onError(IOException e) {
+                            // Handle any error that occurs during the network operation
+                            e.printStackTrace();
+                        }
+                    });
+                    emptyMsgSendBox();
                 } catch (StringPrepParseException e) {
+                    throw new RuntimeException(e);
+                } catch (IOException e) {
                     throw new RuntimeException(e);
                 }
             }
@@ -147,12 +165,34 @@ public class MainActivity extends AppCompatActivity {
     }
 
     //sends message to server socket
-    private String sendMessage(String msg) throws StringPrepParseException, IOException {
+    private String sendMessage(String msg, final OnResponseListener listener) throws StringPrepParseException, IOException {
+//        Thread write_read_thread = new Thread(() -> {
+//            out.println(msg);
+//            msg = in.readLine();
+//        });
+//        write_read_thread.start();
+        Thread writeReadThread = new Thread(() -> {
+            try {
+                out.println(msg);
+                String response = in.readLine();
+                alertString(response);
+                // Call the callback listener with the response
+                if (listener != null) {
+                    listener.onResponse(response);
+                }
+            } catch (IOException e) {
+                // Handle any IOException that occurs during the network operation
 
-//        out.println(msg);
+                // Optionally, you can also notify the callback listener about the error
+                if (listener != null) {
+                    listener.onError(e);
+                }
+            } catch (StringPrepParseException e) {
+                throw new RuntimeException(e);
+            }
+        });
 
-        out.println(msg);
-        msg = in.readLine();
+        writeReadThread.start();
         return msg;
 
     }
