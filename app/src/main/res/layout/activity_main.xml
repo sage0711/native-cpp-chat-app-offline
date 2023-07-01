@@ -67,7 +67,7 @@
         android:layout_width="335dp"
         android:layout_height="624dp"
         android:orientation="vertical"
-        tools:layout_editor_absoluteX="40dp"
-        tools:layout_editor_absoluteY="30dp"></LinearLayout>
+        tools:layout_editor_absoluteX="38dp"
+        tools:layout_editor_absoluteY="31dp"></LinearLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

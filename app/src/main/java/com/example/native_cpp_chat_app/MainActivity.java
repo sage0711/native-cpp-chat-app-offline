@@ -15,12 +15,9 @@ import android.widget.ImageButton;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
-import java.io.PrintWriter;
 import java.net.Socket;
-import java.io.BufferedReader;
 
 import com.example.native_cpp_chat_app.databinding.ActivityMainBinding;
-
 
 public class MainActivity extends AppCompatActivity {
 
@@ -30,11 +27,15 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private ActivityMainBinding binding;
+
+    //message send button
     private ImageButton btn_msg_send;
+
+    //message input box
     private EditText box_msg_input;
 
+    //holds message to send
     private String tempString;
-
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -46,9 +47,8 @@ public class MainActivity extends AppCompatActivity {
         Thread server_start = new Thread() {
             @Override
             public void run() {
-
-                    echoServerStart();
-
+                //starts server
+                echoServerStart();
             }
         };
 
@@ -66,12 +66,6 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 String text = box_msg_input.getText().toString();
-                try {
-//                    alertString(text);
-                    alertStringOnUIThread(text); // Call the modified method
-                } catch (StringPrepParseException e) {
-                    throw new RuntimeException(e);
-                }
                 Thread thread = new Thread() {
                     @Override
                     public void run() {
@@ -82,13 +76,11 @@ public class MainActivity extends AppCompatActivity {
                             dos.writeUTF(text);
                             dos.flush();
                             tempString = dis.readUTF().toString();
-                            //alertString(tempString);
                             alertStringOnUIThread(tempString); // Call the modified method
                             dos.close();
                             dis.close();
                             socket.close();
                         } catch (IOException e) {
-//                            throw new RuntimeException(e);
                             e.printStackTrace();
                         } catch (StringPrepParseException e) {
                             throw new RuntimeException(e);
@@ -126,26 +118,6 @@ public class MainActivity extends AppCompatActivity {
     public int emptyMsgSendBox() {
         box_msg_input.setText("");
         return 1;
-    }
-
-
-    //alerts string
-    public String alertString(String alertStr) throws StringPrepParseException {
-
-        AlertDialog.Builder builder = new AlertDialog.Builder(this);
-
-        builder.setTitle("Response from server socket")
-                .setMessage(alertStr)
-                .setPositiveButton("OK", new DialogInterface.OnClickListener() {
-                    public void onClick(DialogInterface dialog, int id) {
-                        // Code to handle press on OK button
-                        dialog.dismiss();
-                    }
-                });
-
-        AlertDialog alert = builder.create();
-        alert.show();
-        return alertStr;
     }
 
     //imports here
